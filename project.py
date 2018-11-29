@@ -82,3 +82,12 @@ def vectorizerFunction(filterOrNoFilter = CleanWithoutFilter()):
     XTrain = vectorizer.transform(X_train)
     XTest = vectorizer.transform(X_test)
     return XTrain, XTest, y_train, y_test
+
+def MNBClassifier():
+    XTrain, XTest, y_train, y_test = vectorizerFunction()
+    clf = MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)
+    clf.fit(XTrain, y_train)
+    predictions = clf.predict(XTest)
+    score = f1_score(y_test, predictions, average='macro')  
+    print(score)
+    print(predictions)
