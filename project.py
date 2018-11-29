@@ -74,3 +74,11 @@ def CleanWithFilter():
             else:
                 del data['airline_sentiment'][counter]
     return corpus
+
+def vectorizerFunction(filterOrNoFilter = CleanWithoutFilter()):
+    vectorizer = TfidfVectorizer(stop_words='english')
+    X_train, X_test, y_train, y_test = train_test_split(filterOrNoFilter,  data['airline_sentiment'], test_size=0.2)
+    vectorizer.fit(X_train)
+    XTrain = vectorizer.transform(X_train)
+    XTest = vectorizer.transform(X_test)
+    return XTrain, XTest, y_train, y_test
