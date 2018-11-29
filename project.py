@@ -91,3 +91,12 @@ def MNBClassifier():
     score = f1_score(y_test, predictions, average='macro')  
     print(score)
     print(predictions)
+
+def KNeighbourClassifiers():
+    XTrain, XTest, y_train, y_test = vectorizerFunction()
+    neigh = KNeighborsClassifier(n_neighbors=5)
+    neigh.fit(XTrain, y_train) 
+    predictions = neigh.predict(XTest)
+    score = f1_score(y_test, predictions, average='macro')  
+    print(score)
+    print(predictions)
