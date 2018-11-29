@@ -49,3 +49,28 @@ def clean(words):
     words = [ps.stem(word) for word in words]
     words = ' '.join(words)
     return words
+
+def CleanWithoutFilter():
+    corpus = []
+    corpusText=''
+    with open('Tweets.csv',  encoding='utf8') as File:
+        spamreader = csv.reader(File)
+        for row in spamreader:       
+            corpusText =  clean(row[10])
+            corpus.append(corpusText)
+    return corpus
+
+def CleanWithFilter():
+    corpus = []
+    corpusText=''
+    counter = 0
+    with open('Tweets.csv',  encoding='utf8') as File:
+        spamreader = csv.reader(File)
+        for row in spamreader:       
+            corpusText =  clean(row[10])
+            if(not(corpusText.__contains__("RT") or (len(corpusText )<20) or (detect(row[10])=="en"))):
+                corpus.append(corpusText)
+                counter+=1
+            else:
+                del data['airline_sentiment'][counter]
+    return corpus
