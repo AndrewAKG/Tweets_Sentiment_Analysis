@@ -1,12 +1,5 @@
-import numpy as np
 import csv
 from sklearn.model_selection import train_test_split
-import pandas as pd
-from numpy.ma.core import ravel
-from nltk import pos_tag
-from nltk import word_tokenize
-from nltk.corpus import wordnet
-from nltk.stem import  WordNetLemmatizer as wnl
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
 import string
@@ -22,13 +15,11 @@ from sklearn.metrics import f1_score
 from sklearn.preprocessing import normalize
 
 extractor = urlextract.URLExtract()
-data = {'tweet_id':[], 'airline_sentiment':[], 'airline_sentiment_confidence':[], 'negativereason':[],
-        'negativereason_confidence':[], 'airline':[], 'airline_sentiment_gold':[], 'name':[],
-        'negativereason_gold':[], 'retweet_count':[],'text':[], 'tweet_coord':[], 'tweet_created':[],'tweet_location':[],'user_timezone':[]}
+ps = PorterStemmer()
 
+data = {'airline_sentiment':[],'text':[]}
 airline_sentiment = []
 corpus = []
-ps = PorterStemmer()
 
 with open('Tweets.csv', 'r', encoding='utf8') as f:
     tweets = csv.reader(f)
@@ -77,7 +68,7 @@ def CleanWithFilter():
 
 def vectorizerFunction(filterOrNoFilter = CleanWithoutFilter()):
     vectorizer = TfidfVectorizer(stop_words='english')
-    X_train, X_test, y_train, y_test = train_test_split(filterOrNoFilter,  data['airline_sentiment'], test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(filterOrNoFilter,  data['airline_sentiment'], test_size = 0.2)
     vectorizer.fit(X_train)
     XTrain = vectorizer.transform(X_train)
     XTest = vectorizer.transform(X_test)
@@ -85,28 +76,28 @@ def vectorizerFunction(filterOrNoFilter = CleanWithoutFilter()):
 
 def MNBClassifier():
     XTrain, XTest, y_train, y_test = vectorizerFunction()
-    clf = MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)
+    clf = MultinomialNB(alpha = 1.0, class_prior = None, fit_prior = True)
     clf.fit(XTrain, y_train)
     predictions = clf.predict(XTest)
-    score = f1_score(y_test, predictions, average='macro')  
+    score = f1_score(y_test, predictions, average = 'micro')  
     print(score)
     print(predictions)
 
 def KNeighbourClassifiers():
     XTrain, XTest, y_train, y_test = vectorizerFunction()
-    neigh = KNeighborsClassifier(n_neighbors=5)
+    neigh = KNeighborsClassifier(n_neighbors = 5)
     neigh.fit(XTrain, y_train) 
     predictions = neigh.predict(XTest)
-    score = f1_score(y_test, predictions, average='macro')  
+    score = f1_score(y_test, predictions, average = 'micro')  
     print(score)
     print(predictions)
 
 def RForestClassifiers():
-    XTrain, XTest, y_train, y_test = vectorizerFunction(CleanWithFilter())
-    clf = RandomForestClassifier(random_state=0)
+    XTrain, XTest, y_train, y_test = vectorizerFunction()
+    clf = RandomForestClassifier(random_state = 0)
     clf.fit(XTrain, y_train)
     predictions = clf.predict(XTest)
-    score = f1_score(y_test, predictions, average='macro')  
+    score = f1_score(y_test, predictions, average = 'micro')  
     print(score)
     print(predictions)
 
