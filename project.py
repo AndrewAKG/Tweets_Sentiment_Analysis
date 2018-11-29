@@ -100,3 +100,14 @@ def KNeighbourClassifiers():
     score = f1_score(y_test, predictions, average='macro')  
     print(score)
     print(predictions)
+
+def RForestClassifiers():
+    XTrain, XTest, y_train, y_test = vectorizerFunction(CleanWithFilter())
+    clf = RandomForestClassifier(random_state=0)
+    clf.fit(XTrain, y_train)
+    predictions = clf.predict(XTest)
+    score = f1_score(y_test, predictions, average='macro')  
+    print(score)
+    print(predictions)
+
+RForestClassifiers()
