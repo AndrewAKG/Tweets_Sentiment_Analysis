@@ -35,3 +35,17 @@ with open('Tweets.csv', 'r', encoding='utf8') as f:
     for row in tweets:        
         data['airline_sentiment'].append(row[1])
         data['text'].append(row[10])
+
+def clean(words):
+    urls = extractor.find_urls(words+" ")
+    for url in urls:
+        words = words.replace(url,'')
+    tknzr = TweetTokenizer()
+    words = tknzr.tokenize(words)
+    exclude = set(string.punctuation)
+    words = [word.lower() for word in words if not word.lower() in exclude]
+    words = [word.lower() for word in words 
+            if not word in set(stopwords.words('english')) and not word.isdigit()]
+    words = [ps.stem(word) for word in words]
+    words = ' '.join(words)
+    return words
