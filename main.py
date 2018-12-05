@@ -1,4 +1,5 @@
 import csv
+import numpy as np
 from sklearn.model_selection import train_test_split
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
@@ -13,6 +14,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
 from sklearn.preprocessing import normalize
+from sklearn.metrics.pairwise import cosine_similarity
 
 extractor = urlextract.URLExtract()
 ps = PorterStemmer()
@@ -26,6 +28,7 @@ with open('Tweets.csv', 'r', encoding='utf8') as f:
     for row in tweets:        
         data['airline_sentiment'].append(row[1])
         data['text'].append(row[10])
+        corpus.append(row[10])
 
 def clean(words):
     urls = extractor.find_urls(words+" ")
@@ -51,20 +54,65 @@ def CleanWithoutFilter():
             corpus.append(corpusText)
     return corpus
 
+# def simalrity(x):
+#     final=[]  
+#     i=0
+#     vectorizer = TfidfVectorizer(stop_words='english')
+#     x = vectorizer.fit_transform(x).toarray()
+#     x  = np.array(x)
+#     for m in x:                 
+#         allexcept=[] 
+#         if(i==0):
+#             allexcept= (x[i+1:]) 
+#         else:
+#             if(i==len(x)-1):
+#                 allexcept= x[0:i]
+#             else:
+#                 allexcept=np.concatenate((x[0:i], (x[i+1:]) ), axis=0) 
+            
+                       
+#         w= cosine_similarity(x[i:i+1], allexcept)                
+#         q= np.argmax(w)                
+#         if w[0][q]< 0.9:                        
+#             final.append(x[i])  
+#         i=i+1
+#     return final
+
+
+def similarity(docs):
+    vectorizer = TfidfVectorizer()
+    Docsdf = vectorizer.fit_transform(docs)
+    Docsdf = (Docsdf * Docsdf.T).A
+    a = 1
+    b = 0
+    for a in range(len(Docsdf)):
+        for b in range(a):
+            x = Docsdf[b][len(Docsdf)-a]
+            if(x>0.9 and not (len(Docsdf)-a == b)):
+                del docs[b]
+                break
+    return docs
+    
+
 def CleanWithFilter():
     corpus = []
     corpusText=''
     counter = 0
+   
     with open('Tweets.csv',  encoding='utf8') as File:
         spamreader = csv.reader(File)
-        for row in spamreader:       
+        for row in spamreader:  
+            
             corpusText =  clean(row[10])
+                      
             if(not(corpusText.__contains__("RT") or (len(corpusText )<20) or (detect(row[10])=="en"))):
                 corpus.append(corpusText)
                 counter+=1
             else:
                 del data['airline_sentiment'][counter]
-    return corpus
+            
+    corpusFinal = similarity(corpus)
+    return corpusFinal
 
 def vectorizerFunction(filterOrNoFilter = CleanWithoutFilter()):
     vectorizer = TfidfVectorizer(stop_words='english')
@@ -75,7 +123,7 @@ def vectorizerFunction(filterOrNoFilter = CleanWithoutFilter()):
     return XTrain, XTest, y_train, y_test
 
 def MNBClassifier():
-    XTrain, XTest, y_train, y_test = vectorizerFunction()
+    XTrain, XTest, y_train, y_test = vectorizerFunction(CleanWithFilter())
     clf = MultinomialNB(alpha = 1.0, class_prior = None, fit_prior = True)
     clf.fit(XTrain, y_train)
     predictions = clf.predict(XTest)
@@ -84,7 +132,7 @@ def MNBClassifier():
     print(predictions)
 
 def KNeighbourClassifiers():
-    XTrain, XTest, y_train, y_test = vectorizerFunction()
+    XTrain, XTest, y_train, y_test = vectorizerFunction(CleanWithFilter())
     neigh = KNeighborsClassifier(n_neighbors = 5)
     neigh.fit(XTrain, y_train) 
     predictions = neigh.predict(XTest)
@@ -93,7 +141,7 @@ def KNeighbourClassifiers():
     print(predictions)
 
 def RForestClassifiers():
-    XTrain, XTest, y_train, y_test = vectorizerFunction()
+    XTrain, XTest, y_train, y_test = vectorizerFunction(CleanWithFilter())
     clf = RandomForestClassifier(random_state = 0)
     clf.fit(XTrain, y_train)
     predictions = clf.predict(XTest)
@@ -101,4 +149,4 @@ def RForestClassifiers():
     print(score)
     print(predictions)
 
-RForestClassifiers()
+MNBClassifier()
