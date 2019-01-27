@@ -90,6 +90,7 @@ def similarity(docs):
             x = Docsdf[b][len(Docsdf)-a]
             if(x>0.9 and not (len(Docsdf)-a == b)):
                 del docs[b]
+                del data['airline_sentiment'][b]
                 break
     return docs
     
@@ -123,7 +124,7 @@ def vectorizerFunction(filterOrNoFilter = CleanWithoutFilter()):
     return XTrain, XTest, y_train, y_test
 
 def MNBClassifier():
-    XTrain, XTest, y_train, y_test = vectorizerFunction(CleanWithFilter())
+    XTrain, XTest, y_train, y_test = vectorizerFunction(CleanWithoutFilter())
     clf = MultinomialNB(alpha = 1.0, class_prior = None, fit_prior = True)
     clf.fit(XTrain, y_train)
     predictions = clf.predict(XTest)
@@ -132,7 +133,7 @@ def MNBClassifier():
     print(predictions)
 
 def KNeighbourClassifiers():
-    XTrain, XTest, y_train, y_test = vectorizerFunction(CleanWithFilter())
+    XTrain, XTest, y_train, y_test = vectorizerFunction(CleanWithoutFilter())
     neigh = KNeighborsClassifier(n_neighbors = 5)
     neigh.fit(XTrain, y_train) 
     predictions = neigh.predict(XTest)
