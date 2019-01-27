@@ -16,7 +16,6 @@ from sklearn.metrics import f1_score
 from sklearn.preprocessing import normalize
 from sklearn.metrics.pairwise import cosine_similarity
 
-
 extractor = urlextract.URLExtract()
 ps = PorterStemmer()
 
