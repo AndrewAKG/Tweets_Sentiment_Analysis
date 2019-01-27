@@ -54,31 +54,6 @@ def CleanWithoutFilter():
             corpus.append(corpusText)
     return corpus
 
-# def simalrity(x):
-#     final=[]  
-#     i=0
-#     vectorizer = TfidfVectorizer(stop_words='english')
-#     x = vectorizer.fit_transform(x).toarray()
-#     x  = np.array(x)
-#     for m in x:                 
-#         allexcept=[] 
-#         if(i==0):
-#             allexcept= (x[i+1:]) 
-#         else:
-#             if(i==len(x)-1):
-#                 allexcept= x[0:i]
-#             else:
-#                 allexcept=np.concatenate((x[0:i], (x[i+1:]) ), axis=0) 
-            
-                       
-#         w= cosine_similarity(x[i:i+1], allexcept)                
-#         q= np.argmax(w)                
-#         if w[0][q]< 0.9:                        
-#             final.append(x[i])  
-#         i=i+1
-#     return final
-
-
 def similarity(docs):
     vectorizer = TfidfVectorizer()
     Docsdf = vectorizer.fit_transform(docs)
