@@ -54,9 +54,6 @@ def CleanWithoutFilter():
             corpus.append(corpusText)
     return corpus
 
-
-
-
 def similarity(docs):
     vectorizer = TfidfVectorizer()
     Docsdf = vectorizer.fit_transform(docs)
