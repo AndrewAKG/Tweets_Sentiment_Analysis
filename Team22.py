@@ -19,6 +19,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 extractor = urlextract.URLExtract()
 ps = PorterStemmer()
 
+
 data = {'airline_sentiment':[],'text':[]}
 airline_sentiment = []
 corpus = []
